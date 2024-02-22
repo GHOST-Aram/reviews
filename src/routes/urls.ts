@@ -29,7 +29,7 @@ export const routesWrapper = (
     
     
     router.get('/:productId', 
-        validator.validateReferenceId('productId'),
+        validator.validateReferenceId('productId', { required: true}),
         validator.handleValidationErrors,
         controller.getProductReviews
     )
@@ -48,7 +48,7 @@ export const routesWrapper = (
 
     router.patch('/:reviewId', 
         authenticator.authenticate(),
-        validator.validateReferenceId('reviewId'),
+        validator.validateReferenceId('reviewId', { required: true }),
         middlewear.patchInputValidators,
         validator.handleValidationErrors,
         controller.modifyOne
@@ -60,7 +60,7 @@ export const routesWrapper = (
     router.delete('/:reviewId', 
         authenticator.authenticate(),
         authenticator.allowAdminUser,
-        validator.validateReferenceId('reviewId'),
+        validator.validateReferenceId('reviewId', { required: true }),
         validator.handleValidationErrors,
         controller.deleteOne
     )

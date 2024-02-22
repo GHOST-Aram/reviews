@@ -34,4 +34,9 @@ export class Server{
             console.log(`Running ${appName} on http://localhost:${port}`)
         })
     }
+
+    public switchDbConnection = (dbName: string) =>{
+        
+    }
+
 }

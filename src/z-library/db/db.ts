@@ -12,5 +12,6 @@ export class DB{
     
             return Model
     }
+
 }
 

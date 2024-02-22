@@ -5,14 +5,14 @@ export class ResponseAssertion{
 
     public respondsWithMethodNotAllowed = (response: Response) =>{
         expect(response.status).toEqual(405)
-        expect(response.body.message).toMatch(/not allowed/i)
+        expect(response.body).toMatch(/not allowed/i)
         expect(response.headers['content-type']).toMatch(/json/i)
     }
 
     public respondsWithConflict = (response: Response) =>{
         expect(response.status).toEqual(409)
         expect(response.headers['content-type']).toMatch(/json/)
-        expect(response.body.message).toMatch(/exists/)
+        expect(response.body).toMatch(/exists/)
     }
     
     public respondsWithBadRequest = (response: Response) =>{
@@ -28,21 +28,27 @@ export class ResponseAssertion{
     
     public respondsWithCreatedResource = (response: Response) =>{
         expect(response.status).toEqual(201)
-        expect(response.body.message).toMatch(/created/i)
+        expect(response.body).toMatch(/created/i)
         expect(response.headers['content-type']).toMatch(/json/)
         expect(response.header.location).toMatch(
             /\/[.\w]+\/[a-fA-F0-9]{24}/)
     }
 
+    public respondsWithAllDataProperties = (properties: any[], response: Response) =>{
+        properties.forEach(property =>{
+            expect(response.body.resource).toHaveProperty(property)
+        })
+    }
+
     public respondsWithNotFound = (response: Response) =>{
         expect(response.status).toEqual(404)
         expect(response.headers['content-type']).toMatch(/json/)
-        expect(response.body.message).toMatch(/not found/i)
+        expect(response.body).toMatch(/not found/i)
     }
 
     public respondsWithFoundResource = (response: Response) =>{
-        expect(response.body).toHaveProperty('resource')
-        expect(response.body.resource).toHaveProperty('_id')
+        expect(typeof response.body).toMatch(/object/i)
+        expect(response.body).toHaveProperty('_id')
     }
 
     public respondsWithEmptyResourceArray = (response: Response) =>{
@@ -50,24 +56,23 @@ export class ResponseAssertion{
         expect(response.body.resource.length).toEqual(0)
     }
 
-    public respondsWithPaginatedResource = (
-        response: Response, limit: number) =>{
+    public respondsWithPaginatedResource = ( response: Response, limit: number) =>{
+            const resource = response.body
 
-            expect(response.body).toHaveProperty('resource')
+            expect(resource[0]).toHaveProperty('_id')
 
-            const resource = response.body.resource
             expect(Array.isArray(resource)).toBeTruthy()
             expect(resource.length).toEqual(limit)
     }
 
     public respondsWithModifedResource = (response: Response) =>{
-        expect(response.body.message).toMatch(/modified/i)
+        expect(response.body).toMatch(/modified/i)
         expect(response.header.location).toMatch(
             /^\/[.\w]+\/[a-fA-F0-9]{24}$/)
     }
     
     public respondsWithUpdatedResource = (response: Response) => {
-        expect(response.body.message).toMatch(/updated/i)
+        expect(response.body).toMatch(/updated/i)
         expect(response.header.location).toMatch(
             /^\/[.\w]+\/[a-fA-F0-9]{24}$/)
     }
@@ -82,7 +87,6 @@ export class ResponseAssertion{
         expect(response.body.message).toMatch(/deleted/i)
     }
 
-    
     public respondsWithToken = (response: Response) => {
         expect(response.body).toHaveProperty('token')
         expect(typeof response.body.token).toMatch(/string/i)
@@ -100,6 +104,6 @@ export class ResponseAssertion{
         expect(response.body.message).toMatch(/forbidden/i)
         expect(response.headers['content-type']).toMatch(/json/i)
     }
-}   
+}
 
 export const assert = new ResponseAssertion
