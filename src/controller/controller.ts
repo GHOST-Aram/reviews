@@ -1,41 +1,24 @@
-import { HttpResponse } from "../z-library/HTTP/http-response"
-import { Controllable } from "../z-library/bases/controllable"
 import { NextFunction, Request, Response } from "express"
 import { ReviewDataAccess } from "../data-access/data-access"
 import { HydratedReviewDoc } from "../data-access/model"
+import { GenericController } from "../z-library/bases/generic-controller"
 
-export class ReviewsController extends HttpResponse implements Controllable{
-
-    private dataAccess: ReviewDataAccess
+export class ReviewsController extends GenericController<ReviewDataAccess>{
 
     constructor(dataAccess: ReviewDataAccess){
-        super()
-        this.dataAccess = dataAccess
+        super(dataAccess)
     }
 
-    public addNew = async(req: Request, res: Response, next: NextFunction) =>{
-
-        const currentUser:any = req.user
-
-        if(currentUser && req.isAuthenticated()){
-
-            const reviewData = req.body
-    
-            try {
-                const reviewDoc = await this.dataAccess.createNew(reviewData)
-                this.respondWithCreatedResource(reviewDoc.id, res)
-            } catch (error) {
-                next(error)
-            }
-        } else{
-            this.respondWithUnauthorised(res)
-        }
-    }
 
     public getOne = async(req: Request, res: Response, next: NextFunction) => {
+        //Getting a specific review with specific review id is not allowed
+        // Reviews can only be accessed a a collection of random reviews of a collection
+        // of reviews on a specific product.
         this.respondWithMethodNotAllowed(req, res)
     }
 
+
+    //Get reviews for a specific products
     public getProductReviews = async(req: Request, res: Response, next: NextFunction) =>{
 
         const productId = req.params.productId
@@ -51,26 +34,9 @@ export class ReviewsController extends HttpResponse implements Controllable{
         }
     }
 
-    public getMany = async(req: Request, res: Response, next: NextFunction) =>{
-
-        const currentUser:any = req.user
-
-        if(currentUser && req.isAuthenticated() && currentUser.isAdmin){
-
-            const paginator = this.paginate(req)
-    
-            try {
-                const reviews = await this.dataAccess.findWithPagination(paginator)
-                this.respondWithFoundResource(reviews, res)
-            } catch (error) {
-                next(error)
-            }
-        } else{
-            this.respondWithForbidden(res)
-        }
-    }
-
     public updateOne = async(req: Request, res: Response, next: NextFunction) =>{
+        //A Once a review is posted, it cannot be updated fully but it can be
+        //modifed partially
         this.respondWithMethodNotAllowed(req, res)
     }
 
