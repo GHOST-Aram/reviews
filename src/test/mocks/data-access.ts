@@ -1,25 +1,26 @@
 import { jest } from '@jest/globals'
 import { 
         HydratedReviewDoc, 
-        IReview, 
+        Review, 
         ReviewModel 
 } from '../../data-access/model'
 import { Paginator } from '../../z-library/HTTP/http-response'
 import { reviewData } from './raw-data'
+import { GenericDataAccess } from '../../z-library/bases/generic-data-access'
+import { ReviewDataAccess } from '../../data-access/data-access'
 
-export class DataAccess{
+export class DataAccess extends ReviewDataAccess{
 
-    public Model: ReviewModel
 
     constructor(model: ReviewModel){
-        this.Model = model
+        super(model)
     }
 
     public createNew = jest.fn(
 
-        async(input: IReview): Promise<HydratedReviewDoc> =>{
+        async(input: Review): Promise<HydratedReviewDoc> =>{
 
-            const mockReview =  new this.Model(input)
+            const mockReview =  new this.model(input)
             return mockReview
         }
     )
@@ -52,7 +53,7 @@ export class DataAccess{
                  * This value will be used to test that current user is not 
                  * permitted to edit random reviews that they did not create.
                  */
-                const notAuthoredByCurrentUser = new this.Model({
+                const notAuthoredByCurrentUser = new this.model({
                     author: '77c6e4f2df7cc072af2ac9e8',//Not current user
                     product: '64c9e4f2df7cc072af2ac9e8',
                     content: 'Lorem ipsos'
@@ -65,7 +66,7 @@ export class DataAccess{
                  * This value is used to test that the current user is allowed to
                  * modify the reviews that they created.
                  */
-                const authoredByCUrrentUser =  new this.Model({
+                const authoredByCUrrentUser =  new this.model({
                     author: '64c9e4f2df7cc072af2ac9e8',//Current user Id
                     product: '64c9e4f2df7cc072af2ac9e8',
                     content: 'Lorem ipsol'
@@ -103,7 +104,7 @@ export class DataAccess{
         const mockReviews: HydratedReviewDoc[] = []
         
         while (count < length){
-            mockReviews.push(new this.Model(reviewData))
+            mockReviews.push(new this.model(reviewData))
             count++
         }
 
@@ -127,7 +128,7 @@ export class DataAccess{
 
             if(id === expectedCurrentUserId){
 
-                const authoredByCUrrentUser =  new this.Model({
+                const authoredByCUrrentUser =  new this.model({
                     author: '64c9e4f2df7cc072af2ac9e8',//Current user Id
                     product: '64c9e4f2df7cc072af2ac9e8',
                     content: 'Lorem ipsis'
@@ -147,7 +148,7 @@ export class DataAccess{
 
             if(id === idOfAvailableReview){
 
-                const mockdeletedReview =  new this.Model(reviewData)
+                const mockdeletedReview =  new this.model(reviewData)
                 return mockdeletedReview
 
             } else return null

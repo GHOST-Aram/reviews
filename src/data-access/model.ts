@@ -1,15 +1,15 @@
 import { HydratedDocument, Model, ObjectId, Schema, model } from "mongoose";
 
-export interface IReview{
+export interface Review{
     author: ObjectId
     product: ObjectId
     content: string
     createdAt: Date
 }
 
-export type ReviewModel = Model<IReview>
+export type ReviewModel = Model<Review>
 
-export const reviewSchema = new Schema<IReview,ReviewModel>({
+export const reviewSchema = new Schema<Review,ReviewModel>({
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -31,6 +31,6 @@ export const reviewSchema = new Schema<IReview,ReviewModel>({
     }
 })
 
-export type HydratedReviewDoc = HydratedDocument<IReview>
-export const Review = model<IReview, ReviewModel>(
+export type HydratedReviewDoc = HydratedDocument<Review>
+export const Review = model<Review, ReviewModel>(
     'Review', reviewSchema)
