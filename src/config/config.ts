@@ -35,7 +35,7 @@ try {
 }
 
 const PORT = Number(process.env.REVIEWS_PORT) || 3500
-server.listenToRequests(PORT, 'Payments')
+server.listenToRequests(PORT, 'Reviews')
 
 export { app, connection }
 
